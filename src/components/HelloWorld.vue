@@ -1,58 +1,83 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+<div>
+  <div>
+    <h1>Lotte Bike Parking Report</h1>
   </div>
+  <div>
+    <form class="md-layout md-alignment-top-center">
+      <md-card class="md-layout-item md-size-50 md-small-size-100">
+        <md-card-content>
+          <div class="md-layout md-gutter">
+            <div class="md-layout-item md-small-size-100">
+              <md-field>
+                <label>Name</label>
+                <md-input v-model="name"></md-input>
+              </md-field>
+            </div>
+          </div>
+          <div class="md-layout md-gutter">
+            <div class="md-layout-item md-small-size-100">
+              <md-field>
+                <label>Amount</label>
+                <md-input v-model="amount"></md-input>
+              </md-field>
+            </div>
+          </div>
+          <div class="md-layout md-gutter">
+            <div class="md-layout-item md-small-size-100">
+              <md-datepicker v-model="startDate">
+                <label>Start date</label>
+              </md-datepicker>
+            </div>
+          </div>
+          <div class="md-layout md-gutter">
+            <div class="md-layout-item md-small-size-100">
+              <md-datepicker v-model="endDate">
+                <label>End date</label>
+              </md-datepicker>
+            </div>
+          </div>
+          <md-card-actions>
+            <md-button type="button" class="md-raised md-primary" v-on:click.stop="onSubmit">Create Report</md-button>
+          </md-card-actions>
+        </md-card-content>
+      </md-card>
+    </form>
+  </div>
+</div>
 </template>
 
 <script>
+import axios from 'axios'
+import moment from 'moment'
+
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
+  name: 'bikeParkingReport',
+  data: () => ({
+    name: undefined,
+    amount: undefined,
+    startDate: undefined,
+    endDate: undefined
+  }),
+  methods: {
+    onSubmit() {
+      if (this.name === undefined || this.amount === undefined || this.startDate === undefined || this.endDate === undefined) {
+        return;
+      }
+      const start = moment(this.startDate.toString())
+      const end = moment(this.endDate.toString())
+
+      if(start.unix() >= end.unix()) return;
+
+      axios.post('/bikepark', {
+        name: this.name,
+        amount: this.amount,
+        startDate: start,
+        endDate: end
+      }).then(() => {
+        window.location.href = '/Theo doi gui xe_HN_' + this.name + '.xlsx'
+      })
+    }
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
